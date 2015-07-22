@@ -1,0 +1,11 @@
+.git
+.vs
+.gitignore
+.gitattributes
+.gitmodules
+TestResults
+packages
+!packages/repositories.config
+Dockerfile
+.dockerignore
+dockerbuild.sh
