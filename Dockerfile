@@ -1,7 +1,9 @@
 FROM dessix/mono:alpha
 MAINTAINER Dessix <Dessix@Dessix.net>
 
-RUN mkdir -p /usr/src/appbuild && mkdir -p /usr/src/app && mkdir -p /usr/src/app/files
+RUN mkdir -p /usr/src/appbuild && mkdir -p /usr/src/app
+VOLUME /usr/src/app/files
+
 COPY ./ /usr/src/appbuild
 WORKDIR /usr/src/appbuild
 RUN nuget restore DSTHashRepository.sln
