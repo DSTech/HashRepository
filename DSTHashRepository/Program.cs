@@ -25,7 +25,9 @@ namespace DSTHashRepository {
 			var hostConfiguration = new HostConfiguration {
 				RewriteLocalhost = true,
 			};
-			
+
+			StaticConfiguration.EnableHeadRouting = true;
+
 			using (var host = new NancyHost(baseUri: bindUri, bootstrapper: bootstrapper, configuration: hostConfiguration)) {
 				host.Start();
 				Console.WriteLine("Host running...");
