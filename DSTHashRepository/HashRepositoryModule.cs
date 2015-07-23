@@ -17,31 +17,43 @@ namespace DSTHashRepository {
 				Directory.CreateDirectory(FilesDir);
 			}
 			Get["/"] = _ => "DST Hash Repository Prototype";
+			Head["/{hash:minLength(4)}"] = _ => {
+				var hashPath = ToHashPath((string)_.hash);
+				Console.WriteLine("HEAD: {0}", hashPath);
+				if (!File.Exists(hashPath)) {
+					return HttpStatusCode.NotFound;
+				}
+				return HttpStatusCode.OK;
+			};
 			Get["/{hash:minLength(4)}"] = _ => {
-				Console.WriteLine("Serving request on {0}", _.hash);
-				return Response.FromStream(File.OpenRead(ToHashPath((string)_.hash)), "application/binary");
+				var hashPath = ToHashPath((string)_.hash);
+				Console.WriteLine("GET: {0}", hashPath);
+				if (!File.Exists(hashPath)) {
+					return HttpStatusCode.NotFound;
+				}
+				return Response.FromStream(File.OpenRead(hashPath), "application/binary");
 			};
 			Put["/{hash:minLength(4)}", true] = async (_, ct) => {
+				var hashPath = ToHashPath((string)_.hash);
 				var secretHeader = Request.Headers["secret"].FirstOrDefault();
 				if (!config.CheckCredentials("", secretHeader)) {
-					Console.WriteLine("Failed to authenticate on {0}", _.hash);
+					Console.WriteLine("PUT|AUTHFAIL: {0}", hashPath);
 					return HttpStatusCode.Forbidden;
 				}
-				Console.WriteLine("Secret accepted on {0}", _.hash);
-				var hashPath = ToHashPath((string)_.hash);
+				Console.WriteLine("PUT: {0}", hashPath);
 				using (var destFile = File.OpenWrite(hashPath)) {
 					await Request.Body.CopyToAsync(destFile);
 				}
 				return HttpStatusCode.OK;
 			};
 			Delete["/{hash:minLength(4)}"] = _ => {
+				var hashPath = ToHashPath((string)_.hash);
 				var secretHeader = Request.Headers["secret"].FirstOrDefault();
 				if (!config.CheckCredentials("", secretHeader)) {
-					Console.WriteLine("Failed to authenticate on {0}", _.hash);
+					Console.WriteLine("DELETE|AUTHFAIL: {0}", hashPath);
 					return HttpStatusCode.Forbidden;
 				}
-				Console.WriteLine("Secret accepted for delete on {0}", _.hash);
-				var hashPath = ToHashPath((string)_.hash);
+				Console.WriteLine("DELETE: {0}", hashPath);
 				if (!File.Exists(hashPath)) {
 					return HttpStatusCode.NotFound;
 				}
