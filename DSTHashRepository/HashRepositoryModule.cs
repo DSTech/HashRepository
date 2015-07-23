@@ -19,11 +19,11 @@ namespace DSTHashRepository {
 			Get["/"] = _ => "DST Hash Repository Prototype";
 			Get["/{hash:minLength(4)}"] = _ => {
 				Console.WriteLine("Serving request on {0}", _.hash);
-                return Response.FromStream(File.OpenRead(ToHashPath((string)_.hash)), "application/binary");
+				return Response.FromStream(File.OpenRead(ToHashPath((string)_.hash)), "application/binary");
 			};
 			Put["/{hash:minLength(4)}", true] = async (_, ct) => {
 				var secretHeader = Request.Headers["secret"].FirstOrDefault();
-                if (!config.CheckCredentials("", secretHeader)) {
+				if (!config.CheckCredentials("", secretHeader)) {
 					Console.WriteLine("Failed to authenticate on {0}", _.hash);
 					return HttpStatusCode.Forbidden;
 				}
@@ -32,6 +32,20 @@ namespace DSTHashRepository {
 				using (var destFile = File.OpenWrite(hashPath)) {
 					await Request.Body.CopyToAsync(destFile);
 				}
+				return HttpStatusCode.OK;
+			};
+			Delete["/{hash:minLength(4)}"] = _ => {
+				var secretHeader = Request.Headers["secret"].FirstOrDefault();
+				if (!config.CheckCredentials("", secretHeader)) {
+					Console.WriteLine("Failed to authenticate on {0}", _.hash);
+					return HttpStatusCode.Forbidden;
+				}
+				Console.WriteLine("Secret accepted for delete on {0}", _.hash);
+				var hashPath = ToHashPath((string)_.hash);
+				if (!File.Exists(hashPath)) {
+					return HttpStatusCode.NotFound;
+				}
+				File.Delete(hashPath);
 				return HttpStatusCode.OK;
 			};
 		}
