@@ -12,4 +12,4 @@ RUN cp -r ./DSTHashRepository/bin/Release/. /usr/src/app/
 WORKDIR /usr/src/app
 
 EXPOSE 3000
-CMD mono ./DSTHashRepository.exe
+ENTRYPOINT ["mono", "./DSTHashRepository.exe"]

@@ -10,9 +10,16 @@ using Nancy.TinyIoc;
 
 namespace DSTHashRepository {
 	public class Bootstrapper : DefaultNancyBootstrapper {
+		private readonly string adminSecret;
+		public Bootstrapper(string adminSecret) {
+			this.adminSecret = adminSecret;
+		}
 		protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines) {
 			base.ApplicationStartup(container, pipelines);
 			CookieBasedSessions.Enable(pipelines);
+			var hashRepositoryConfig = new HashRepositoryConfig(adminSecret: adminSecret) {
+			};
+			container.Register<IHashRepositoryConfig>(hashRepositoryConfig);
 		}
 
 		private static void SessionStart(ISession session) {
