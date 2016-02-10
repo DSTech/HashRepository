@@ -41,7 +41,7 @@ namespace DSTHashRepository {
 					return HttpStatusCode.Forbidden;
 				}
 				Console.WriteLine("PUT: {0}", hashPath);
-				using (var destFile = File.OpenWrite(hashPath)) {
+				using (var destFile = File.Create(hashPath)) {
 					await Request.Body.CopyToAsync(destFile);
 				}
 				return HttpStatusCode.OK;
