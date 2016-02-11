@@ -42,7 +42,7 @@ namespace DSTHashRepository {
 				Directory.CreateDirectory(FilesDir);
 			}
 			Get["/"] = _ => "DST Hash Repository Prototype";
-			Head["/{hash:minLength(4)*}"] = _ => {
+			Head["/{hash*}"] = _ => {
 				var hashPath = ToHashPath((string)_.hash);
 				Console.WriteLine("HEAD: {0}", hashPath);
 				if (!File.Exists(hashPath)) {
@@ -50,7 +50,7 @@ namespace DSTHashRepository {
 				}
 				return HttpStatusCode.OK;
 			};
-			Get["/{hash:minLength(4)*}"] = _ => {
+			Get["/{hash*}"] = _ => {
 				var hashPath = ToHashPath((string)_.hash);
 				Console.WriteLine("GET: {0}", hashPath);
 				if (!File.Exists(hashPath)) {
@@ -58,7 +58,7 @@ namespace DSTHashRepository {
 				}
 				return Response.FromStream(File.OpenRead(hashPath), "application/binary");
 			};
-			Put["/{hash:minLength(4)*}", true] = async (_, ct) => {
+			Put["/{hash*}", true] = async (_, ct) => {
 				var hashPath = ToHashPath((string)_.hash);
 				var secretHeader = Request.Headers["secret"].FirstOrDefault();
 				if (!config.CheckCredentials("", secretHeader)) {
@@ -71,7 +71,7 @@ namespace DSTHashRepository {
 				}
 				return HttpStatusCode.OK;
 			};
-			Delete["/{hash:minLength(4)*}"] = _ => {
+			Delete["/{hash*}"] = _ => {
 				var hashPath = ToHashPath((string)_.hash);
 				var secretHeader = Request.Headers["secret"].FirstOrDefault();
 				if (!config.CheckCredentials("", secretHeader)) {

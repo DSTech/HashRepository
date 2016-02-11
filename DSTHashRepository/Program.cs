@@ -27,7 +27,7 @@ namespace DSTHashRepository {
 			};
 
 			StaticConfiguration.EnableHeadRouting = true;
-
+		    hostConfiguration.UrlReservations.CreateAutomatically = true;
 			using (var host = new NancyHost(baseUri: bindUri, bootstrapper: bootstrapper, configuration: hostConfiguration)) {
 				host.Start();
 				Console.WriteLine("Host running...");
